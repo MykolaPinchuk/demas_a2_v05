@@ -1,0 +1,17 @@
+{
+  "run_id": "i1-lite-smoke",
+  "instances_path": "/home/mykola/repos/demas_a2_v05/instances/i1_instances_smoke.jsonl",
+  "predictions_path": "/home/mykola/repos/demas_a2_v05/runs/i1-lite-smoke/predictions.jsonl",
+  "models": [
+    {
+      "provider": "chutes",
+      "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+      "temperature": 0.2,
+      "seed": 42
+    }
+  ],
+  "attempts": 1,
+  "temperature": 0.2,
+  "max_output_tokens": 1200,
+  "generated": 1757905954
+}

@@ -1,0 +1,16 @@
+credentials.txt
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Run artifacts
+runs/
+logs/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/

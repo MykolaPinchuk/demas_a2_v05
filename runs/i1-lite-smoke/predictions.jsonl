@@ -1,0 +1,1 @@
+{"instance_id": "django__django-12113", "model_name_or_path": "chutes:Qwen/Qwen3-Coder-30B-A3B-Instruct", "model_patch": "", "status": "no_valid_patch", "usage": {"error": "HTTP Error 500: Internal Server Error"}}

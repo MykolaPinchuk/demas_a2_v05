@@ -1,0 +1,8 @@
+{
+  "run_id": "baseline-i1-lite",
+  "generated": 1757905597,
+  "instances_path": "/home/mykola/repos/demas_a2_v05/instances/i1_instances_lite.jsonl",
+  "predictions_path": "/home/mykola/repos/demas_a2_v05/runs/baseline-i1-lite/predictions.jsonl",
+  "model_name_or_path": "baseline_no_patch",
+  "note": "Baseline run with empty patches for all instances."
+}

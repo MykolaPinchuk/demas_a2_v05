@@ -1,0 +1,17 @@
+{
+  "run_id": "i1-lite-smoke-openrouter",
+  "instances_path": "/home/mykola/repos/demas_a2_v05/instances/i1_instances_smoke.jsonl",
+  "predictions_path": "/home/mykola/repos/demas_a2_v05/runs/i1-lite-smoke-openrouter/predictions.jsonl",
+  "models": [
+    {
+      "provider": "openrouter",
+      "model": "openai/gpt-5-mini",
+      "temperature": 0.2,
+      "seed": 42
+    }
+  ],
+  "attempts": 1,
+  "temperature": 0.2,
+  "max_output_tokens": 800,
+  "generated": 1757906065
+}

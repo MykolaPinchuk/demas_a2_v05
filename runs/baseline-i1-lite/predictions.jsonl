@@ -1,0 +1,6 @@
+{"instance_id": "django__django-12113", "model_name_or_path": "baseline_no_patch", "model_patch": "", "patch": ""}
+{"instance_id": "matplotlib__matplotlib-23563", "model_name_or_path": "baseline_no_patch", "model_patch": "", "patch": ""}
+{"instance_id": "pylint-dev__pylint-7080", "model_name_or_path": "baseline_no_patch", "model_patch": "", "patch": ""}
+{"instance_id": "pytest-dev__pytest-11143", "model_name_or_path": "baseline_no_patch", "model_patch": "", "patch": ""}
+{"instance_id": "astropy__astropy-12907", "model_name_or_path": "baseline_no_patch", "model_patch": "", "patch": ""}
+{"instance_id": "mwaskom__seaborn-3190", "model_name_or_path": "baseline_no_patch", "model_patch": "", "patch": ""}

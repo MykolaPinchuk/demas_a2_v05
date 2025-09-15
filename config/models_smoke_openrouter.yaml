@@ -1,0 +1,5 @@
+models:
+  - provider: openrouter
+    model: openai/gpt-oss-20b
+    temperature: 0.2
+    seed: 42

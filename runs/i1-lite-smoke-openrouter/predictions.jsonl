@@ -1,0 +1,1 @@
+{"instance_id": "django__django-12113", "model_name_or_path": "openrouter:openai/gpt-5-mini", "model_patch": "", "status": "no_valid_patch", "usage": {"elapsed": 23.315483331680298, "prompt_tokens": 2707.0, "completion_tokens": 1536.0, "total_tokens": 4243.0}}

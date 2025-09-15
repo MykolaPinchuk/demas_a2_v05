@@ -1,0 +1,11 @@
+{
+  "dataset_name": "princeton-nlp/SWE-bench_Lite/test",
+  "selection_seed": 42,
+  "filters": {
+    "max_lines": 120,
+    "max_hunks": 6,
+    "max_files": 2
+  },
+  "selected_count": 6,
+  "notes": "Heuristics favor small diffs and few hunks/files; preference for diverse repos."
+}

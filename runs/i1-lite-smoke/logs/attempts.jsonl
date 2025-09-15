@@ -1,0 +1,1 @@
+{"instance_id": "django__django-12113", "provider": "chutes", "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct", "attempt_index": 0, "seed": 42, "status": "no_valid_patch", "usage": {"error": "HTTP Error 500: Internal Server Error"}, "ts": 1757905954}
