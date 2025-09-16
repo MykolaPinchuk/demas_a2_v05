@@ -1,0 +1,5 @@
+models:
+  - provider: chutes
+    model: Qwen/Qwen3-Coder-30B-A3B-Instruct
+    temperature: 0.2
+    seed: 42

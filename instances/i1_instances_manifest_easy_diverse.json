@@ -1,0 +1,95 @@
+{
+  "dataset_name": "princeton-nlp/SWE-bench_Lite/test",
+  "policy": "easy + diverse by repo; exclude django/django",
+  "filters": {
+    "max_lines": 120,
+    "max_hunks": 6,
+    "max_files": 1
+  },
+  "preferred_repos": [
+    "pytest-dev/pytest",
+    "mwaskom/seaborn",
+    "astropy/astropy",
+    "matplotlib/matplotlib",
+    "sympy/sympy",
+    "pandas-dev/pandas",
+    "numpy/numpy",
+    "scikit-learn/scikit-learn",
+    "pylint-dev/pylint",
+    "scipy/scipy"
+  ],
+  "selected_preview": [
+    {
+      "instance_id": "pytest-dev__pytest-11143",
+      "repo": "pytest-dev/pytest",
+      "n_lines": 11,
+      "n_hunks": 1,
+      "n_files": 1,
+      "n_add": 2,
+      "n_del": 1
+    },
+    {
+      "instance_id": "mwaskom__seaborn-3190",
+      "repo": "mwaskom/seaborn",
+      "n_lines": 12,
+      "n_hunks": 1,
+      "n_files": 1,
+      "n_add": 2,
+      "n_del": 2
+    },
+    {
+      "instance_id": "astropy__astropy-12907",
+      "repo": "astropy/astropy",
+      "n_lines": 12,
+      "n_hunks": 1,
+      "n_files": 1,
+      "n_add": 2,
+      "n_del": 2
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23563",
+      "repo": "matplotlib/matplotlib",
+      "n_lines": 11,
+      "n_hunks": 1,
+      "n_files": 1,
+      "n_add": 2,
+      "n_del": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13480",
+      "repo": "sympy/sympy",
+      "n_lines": 12,
+      "n_hunks": 1,
+      "n_files": 1,
+      "n_add": 2,
+      "n_del": 2
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13584",
+      "repo": "scikit-learn/scikit-learn",
+      "n_lines": 12,
+      "n_hunks": 1,
+      "n_files": 1,
+      "n_add": 2,
+      "n_del": 2
+    },
+    {
+      "instance_id": "pylint-dev__pylint-7080",
+      "repo": "pylint-dev/pylint",
+      "n_lines": 11,
+      "n_hunks": 1,
+      "n_files": 1,
+      "n_add": 2,
+      "n_del": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25433",
+      "repo": "matplotlib/matplotlib",
+      "n_lines": 11,
+      "n_hunks": 1,
+      "n_files": 1,
+      "n_add": 2,
+      "n_del": 1
+    }
+  ]
+}

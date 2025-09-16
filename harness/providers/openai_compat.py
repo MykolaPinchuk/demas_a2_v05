@@ -64,10 +64,20 @@ class OpenAICompatChat:
         except Exception as e:
             raise OpenAICompatError(f"Invalid JSON from provider: {e}; raw={raw[:200]}...")
         # OpenAI format: choices[0].message.content
+        # Try common content locations
+        content = None
         try:
-            content = obj["choices"][0]["message"]["content"]
-        except Exception as e:
-            raise OpenAICompatError(f"Unexpected provider response: {obj}")
+            first = obj.get("choices", [{}])[0]
+            if isinstance(first, dict):
+                if isinstance(first.get("message"), dict):
+                    content = first["message"].get("content")
+                if content in (None, "") and "text" in first:
+                    content = first.get("text")
+        except Exception:
+            content = None
+        if content is None:
+            # Fallback to stringifying the whole object to avoid crashes upstream
+            content = ""
         usage = obj.get("usage", {})
         meta = {
             "elapsed": elapsed,
@@ -75,5 +85,10 @@ class OpenAICompatChat:
             "completion_tokens": float(usage.get("completion_tokens", 0)),
             "total_tokens": float(usage.get("total_tokens", 0)),
         }
+        # Ensure text type
+        if not isinstance(content, str):
+            try:
+                content = str(content)
+            except Exception:
+                content = ""
         return content, meta
-

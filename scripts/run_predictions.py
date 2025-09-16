@@ -16,6 +16,7 @@ def main():
     ap.add_argument("--attempts", type=int, default=2)
     ap.add_argument("--temperature", type=float, default=0.2)
     ap.add_argument("--max_output_tokens", type=int, default=2000)
+    ap.add_argument("--mode", choices=["patch","edit"], default="patch")
     args = ap.parse_args()
 
     load_credentials_into_env()
@@ -28,10 +29,10 @@ def main():
         attempts=args.attempts,
         temperature=args.temperature,
         max_output_tokens=args.max_output_tokens,
+        mode=args.mode,
     )
     print(f"Predictions written: {pred_path}")
 
 
 if __name__ == "__main__":
     main()
-

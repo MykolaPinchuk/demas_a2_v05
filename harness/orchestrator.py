@@ -14,7 +14,12 @@ from harness.agent.patch_controller import (
     build_patch_system_prompt,
     build_patch_user_prompt,
     extract_diff,
+    normalize_diff,
+    rewrite_paths_for_repo,
+    validate_diff_structure,
 )
+from harness.agent.edit_controller import run_edit_attempt
+from harness.preflight import preflight_apply
 
 
 def load_instances_jsonl(path: str) -> List[str]:
@@ -78,29 +83,88 @@ def run_patch_attempt(
 ) -> Tuple[str, Dict]:
     sys_prompt = build_patch_system_prompt()
     user = build_patch_user_prompt(instance)
+    # Add repository file hints based on keywords to reduce path errors
+    repo = (instance.get("repo") or "").strip()
+    if repo and os.getenv("REPO_HINTS", "1") != "0":
+        text_fields = " ".join(
+            [str(instance.get("title") or instance.get("issue_title") or ""), str(instance.get("problem_statement") or instance.get("issue_body") or "")]
+        )
+        keys = [w.strip(".,:;()[]{}\"'!?") for w in text_fields.split()]
+        try:
+            from harness.preflight import repo_file_hints
+            hints = repo_file_hints(repo, tuple(keys), limit=5)
+        except Exception:
+            hints = []
+        if hints:
+            user += "\n\nRepository likely files (paths):\n- " + "\n- ".join(hints)
     messages = [{"role": "system", "content": sys_prompt}, {"role": "user", "content": user}]
     try:
         text, meta = client.chat(messages, temperature=temperature, max_output_tokens=max_output_tokens, seed=seed)
     except OpenAICompatError as e:
         return "", {"error": str(e)}
+
+    # First parse and structurally validate
     diff = extract_diff(text)
-    if not diff:
-        # Try a corrective nudge within the same attempt
+    ok, reason = validate_diff_structure(diff)
+    if not diff or not ok:
         messages.append({"role": "assistant", "content": text})
         messages.append(
             {
                 "role": "user",
-                "content": "Your previous output was not a unified diff. Reply again with ONLY a valid unified diff (no commentary).",
+                "content": (
+                    "Your previous output was not a valid unified diff ("
+                    + (reason or "unknown")
+                    + "). Reply again with ONLY a valid single-file unified diff between BEGIN_PATCH and END_PATCH.\n"
+                    "Requirements: include 'diff --git', then '--- a/<path>' and '+++ b/<path>', at least one '@@' hunk, and each hunk line must start with space, '+' or '-'."
+                ),
             }
         )
         try:
-            text2, meta2 = client.chat(
+            text, meta2 = client.chat(
                 messages, temperature=temperature, max_output_tokens=max_output_tokens, seed=seed
             )
             meta.update({k: meta.get(k, 0) + meta2.get(k, 0) for k in ["prompt_tokens", "completion_tokens", "total_tokens"]})
-            diff = extract_diff(text2)
+            diff = extract_diff(text)
         except OpenAICompatError as e:
             return "", {"error": str(e), **meta}
+
+    # Normalize + repo-aware path rewrite
+    repo = (instance.get("repo") or "").strip()
+    if diff:
+        diff = normalize_diff(diff)
+        if repo:
+            diff = rewrite_paths_for_repo(diff, repo)
+
+    # Preflight apply check (advisory)
+    if diff and repo and os.getenv("PREFLIGHT_APPLY", "1") != "0":
+        base_commit = instance.get("base_commit")
+        ok_apply, err = preflight_apply(repo, diff, commit=base_commit)
+        if not ok_apply:
+            # Provide stderr back to the model for a single corrective re-ask
+            messages.append({"role": "assistant", "content": text})
+            messages.append(
+                {
+                    "role": "user",
+                    "content": (
+                        "Preflight apply failed on the repository. Use the following error to correct the diff, then respond again with ONLY the unified diff between BEGIN_PATCH and END_PATCH.\n\n"
+                        + err[:800]
+                    ),
+                }
+            )
+            try:
+                text, meta3 = client.chat(
+                    messages, temperature=temperature, max_output_tokens=max_output_tokens, seed=seed
+                )
+                meta.update({k: meta.get(k, 0) + meta3.get(k, 0) for k in ["prompt_tokens", "completion_tokens", "total_tokens"]})
+                diff2 = extract_diff(text)
+                if diff2:
+                    diff2 = normalize_diff(diff2)
+                    if repo:
+                        diff2 = rewrite_paths_for_repo(diff2, repo)
+                    diff = diff2
+            except OpenAICompatError as e:
+                return "", {"error": str(e), **meta}
+
     return diff, meta
 
 
@@ -111,6 +175,7 @@ def orchestrate_predictions(
     attempts: int = 2,
     temperature: float = 0.2,
     max_output_tokens: int = 2000,
+    mode: str = "patch",
 ) -> str:
     load_credentials_into_env()
 
@@ -148,6 +213,7 @@ def orchestrate_predictions(
                         temperature,
                         max_output_tokens,
                         seed,
+                        mode,
                     )
                 )
         for fut in as_completed(futures):
@@ -187,14 +253,30 @@ def _per_instance(
     temperature: float,
     max_output_tokens: int,
     seed: int,
+    mode: str,
 ) -> None:
     last_patch = ""
     last_meta: Dict = {}
     status = "failed"
     for k in range(attempts):
         attempt_seed = seed + k
-        patch, meta = run_patch_attempt(client, instance, temperature, max_output_tokens, attempt_seed)
+        if mode == "edit":
+            patch, meta = run_edit_attempt(client, instance, temperature, max_output_tokens, attempt_seed)
+            # Fallback: if editing produced no diff, try patch-mode once
+            if not patch:
+                p2, m2 = run_patch_attempt(client, instance, temperature, max_output_tokens, attempt_seed)
+                if p2:
+                    patch, meta = p2, m2
+        else:
+            patch, meta = run_patch_attempt(client, instance, temperature, max_output_tokens, attempt_seed)
         if patch:
+            patch = normalize_diff(patch)
+            # Repo-aware path rewrite to reduce 'No file to patch'
+            repo = (instance.get("repo") or "").strip()
+            if repo:
+                patch = rewrite_paths_for_repo(patch, repo)
+        ok2, _ = validate_diff_structure(patch)
+        if patch and ok2:
             last_patch = patch
             last_meta = meta
             status = "ok"

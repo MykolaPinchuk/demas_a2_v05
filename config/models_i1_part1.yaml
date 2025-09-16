@@ -1,0 +1,13 @@
+models:
+  - provider: chutes
+    model: Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8
+    temperature: 0.2
+    seed: 42
+  - provider: chutes
+    model: Qwen/Qwen3-Coder-30B-A3B-Instruct
+    temperature: 0.2
+    seed: 42
+  - provider: chutes
+    model: moonshotai/Kimi-K2-Instruct-0905
+    temperature: 0.2
+    seed: 42

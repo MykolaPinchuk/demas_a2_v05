@@ -1,0 +1,5 @@
+models:
+  - provider: chutes
+    model: unsloth/gemma-3-12b-it
+    temperature: 0.2
+    seed: 42
